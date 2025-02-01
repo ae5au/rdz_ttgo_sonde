@@ -2,6 +2,8 @@
 #include "conn-system.h"
 
 #include <WiFi.h>
+#include "esp_netif.h"
+
 #include "geteph.h"
 #include "pmu.h"
 
@@ -14,6 +16,9 @@ void ConnSystem::init() {
 
 void ConnSystem::netsetup() {
   /* empty function, we don't use any network here */
+}
+
+void ConnSystem::netshutdown() {
 }
 
 void ConnSystem::updateSonde( SondeInfo *si ) {
@@ -78,11 +83,32 @@ String ConnSystem::getStatus() {
   appendUptime(buf, 1024, uptime - netup_time);
   appendBatt(buf, 1024);
   p = strlen(buf);
-  snprintf(buf+p, 1024-p, " <br> rdzwxGO app: %sconnected<br>RS92 RINEX eph state: %s", rdzclient.connected()?"":"not ", rs92);
+  snprintf(buf+p, 1024-p, " <br> rdzwxGO app: %sconnected<br>", rdzclient.connected()?"":"not ");
+  #if FEATURE_RS92
+  p = strlen(buf);
+  snprintf(buf+p, 1024-p, "RS92 RINEX eph state: %s", rdzclient.connected()?"":"not ", rs92);
   if(ephstate == EPH_GOOD) {
      p = strlen(buf);
      snprintf(buf+p, 1024-p, "[%s]", eph_nowstr);
   }
+  #endif
+  // get DNS info, debug info...
+  String s = WiFi.dnsIP(0).toString();
+  strlcat(buf, "<br>DNS: ", 1024);
+  strlcat(buf, s.c_str(), 1024);
+  s = WiFi.dnsIP(1).toString();
+  strlcat(buf, ", DNS2: ", 1024);
+  strlcat(buf, s.c_str(), 1024);
+  // arduino-esp32 supports only 2 DNS servers, whereas esp-idf can have three....
+  // https://github.com/espressif/arduino-esp32/blob/19e4d0db4a5bc2f77c5222c0f12742ff9b98bf76/libraries/Network/src/NetworkInterface.cpp#L691
+  // so can't get the backup ip this way...
+  // s = WiFi.dnsIP(2).toString();
+  esp_netif_dns_info_t d;
+  esp_netif_get_dns_info(WiFi.STA.netif(), ESP_NETIF_DNS_FALLBACK, &d);
+  s = IPAddress(d.ip.u_addr.ip4.addr).toString();  // IPv4 only this way....
+  strlcat(buf, ", DNS3: ", 1024);
+  strlcat(buf, s.c_str(), 1024);
+
   return String(buf);
 }
 

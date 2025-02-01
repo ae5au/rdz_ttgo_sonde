@@ -7,6 +7,8 @@ body, html {
 .system-info {
     padding: 20px;
     font-family: Arial, sans-serif;
+    flex-grow: 1;
+    overflow-y: auto;
 }
 .system-info p {
     margin: 8px 0;
@@ -39,12 +41,9 @@ body, html {
     color: #007BFF;
 }
 
-.external-links {
+h2.external-links {
     margin-top: 40px;
     text-align: center;
-}
-
-.external-links h2 {
     font-size: 20px;
     margin-bottom: 15px;
 }
@@ -70,6 +69,10 @@ body, html {
   background-color: #ccc;
 }
 .cfgpanel {
+}
+.cfgpanel:hover td, .cfgpanel:active td{
+    background-color: #808080 !important;
+    color: white;
 }
 
 th.cfg {
@@ -105,7 +108,7 @@ table.stat {
   margin: 0;
 }
 .tci {
-  flex-grow: 1; border: none; margin: 0; padding: 0; 
+  flex-grow: 1; border: none; margin: 0; padding: 0; overflow-y: auto;
 }
 .footer {
  background-color: #333;
@@ -197,8 +200,10 @@ h1{
   text-align: center;
   text-decoration: none;
   display: block;
-  margin: 2;
   font-size: 4vh;
+  margin-top: 0.3em;
+  margin-left: 0.3em;
+  margin-right: 0.3em;
 }
 .update {
   margin: 0;
@@ -411,9 +416,18 @@ h1{
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #333;
-  }   
+  }
+  h1{
+    color: #3378f6;
+  } 
   h2{
     color: white;
+  }
+  .system-info p {
+	  color: #bdbdbd;
+  }
+  .status-table th {
+	  color: black;
   }
   table, th, td, .save, a.active {
     color: white;

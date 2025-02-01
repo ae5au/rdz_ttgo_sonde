@@ -124,10 +124,10 @@ void gpsTask(void *parameter) {
         }
         if(strncmp(nmeastring+3, "GGA", 3)==0 || strncmp(nmeastring+3, "RMC", 3)==0) {
             strncpy(lastnmea, nmeastring, 100);
-	    Serial.printf("GPS: last position nmea: %s\n", lastnmea);
+	    //Serial.printf("GPS: last position nmea: %s\n", lastnmea);
  	}
  	else  {
-	    Serial.printf("GPS: last nmea: %s\n", nmeastring);
+	    //Serial.printf("GPS: last nmea: %s\n", nmeastring);
 	}
         gpsPos.valid = nmea.isValid();
         if (gpsPos.valid) {
@@ -171,6 +171,10 @@ void gpsTask(void *parameter) {
         gpsPos.hdop = nmea.getHDOP();
         gpsPos.sat = nmea.getNumSatellites();
         gpsPos.speed = nmea.getSpeed() / 1000.0 * 0.514444; // speed is in m/s  nmea.getSpeed is in 0.001 knots
+        snprintf(gpsPos.time, sizeof(gpsPos.time),
+                 "%04d-%02d-%02d %02d:%02d:%02d", nmea.getYear(),
+                 nmea.getMonth(), nmea.getDay(), nmea.getHour(),
+                 nmea.getMinute(), nmea.getSecond());
 #ifdef DEBUG_GPS
         uint8_t hdop = nmea.getHDOP();
         Serial.printf(" =>: valid: %d  N %f  E %f  alt %d  course:%d dop:%d\n", gpsPos.valid ? 1 : 0, gpsPos.lat, gpsPos.lon, gpsPos.alt, gpsPos.course, hdop);

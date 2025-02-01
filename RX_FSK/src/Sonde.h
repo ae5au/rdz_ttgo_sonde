@@ -6,6 +6,19 @@
 #include <inttypes.h>
 #include <Arduino.h>
 
+typedef enum BoardTypes {
+   BOARD_TBEAM_0_7,
+   BOARD_TBEAM_1_0,
+   BOARD_TBEAM_1_1,
+   BOARD_TBEAM_1_2,
+   BOARD_TTGO_LORA_2,
+   BOARD_TTGOv1_HELTEC,
+   BOARD_M5_CORE_GRAY,
+   BOARD_M5_CORE2,
+   BOARD_UNKNOWN
+} BoardTypes;
+
+
 
 // RX_TIMEOUT: no header detected
 // RX_ERROR: header detected, but data not decoded (crc error, etc.)
@@ -207,6 +220,7 @@ struct st_mqtt {
 	char username[64];
 	char password[64];
 	char prefix[64];
+	int report_interval;
 };
 
 struct st_cm {
@@ -328,9 +342,12 @@ extern const int N_CONFIG;
 extern int fingerprintValue[];
 extern const char *fingerprintText[];
 
+enum BoardTypes;
+
 class Sonde
 {
 private:
+	void setDefaultConfig(BoardTypes bt);
 public:
 	RDZConfig config;
 	int fingerprint = 0;
